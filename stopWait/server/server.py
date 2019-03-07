@@ -26,8 +26,23 @@ print("binding datagram socket to %s" % repr(serverAddr))
 serverSocket = socket(AF_INET, SOCK_DGRAM)
 serverSocket.bind(serverAddr)
 print("ready to receive")
-while 1:
-    message, clientAddrPort = serverSocket.recvfrom(2048)
-    print("from %s: rec'd '%s'" % (repr(clientAddrPort), message))
-    modifiedMessage = message.upper()
-    serverSocket.sendto(modifiedMessage, clientAddrPort)
+
+message, clientAddrPort = serverSocket.recvfrom(2048)
+file = open(message,"wb+")
+
+while True:
+    #error handling
+    try:
+        message, clientAddrPort = serverSocket.recvfrom(2048)
+
+    except:
+        pass
+
+    if not message:
+        break
+    #checking if end of file else writes to file
+    if b"\'end\'" in message:
+        file.close()
+        sys.exit(0)
+    else:
+        file.write(message)

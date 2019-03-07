@@ -26,7 +26,7 @@ except:
 
 clientSocket = socket(AF_INET, SOCK_DGRAM)
 clientSocket.settimeout(0.8)
-ack = false
+#ack = false
 #message = input("Input lowercase msg:")
 #clientSocket.sendto(message.encode(), serverAddr)
 #modifiedMessage, serverAddrPort = clientSocket.recvfrom(2048)
@@ -41,13 +41,19 @@ except FileNotFoundError:
     print("file not found, Exiting")
     sys.exit(0)
 
-clientSocket.sendto(data, serverAddr)
-while not ack:
-    try:
-        ACK, address = clientSocket.recvfrom(2048)
-        future=time.time()+0.8
-        ack = True
-    except timeout:
+while len(data) >= 100:
+    line = data[:100]
+    data = data[100:]
+    clientSocket.sendto(data, serverAddr)
+    if len(data) > 0:
         clientSocket.sendto(data, serverAddr)
-print(ACK)
-clientSocket.close()
+        clientSocket.sendto(b":\'end\'", serverAddr)
+
+#while not ack:
+#    try:
+#        ACK, address = clientSocket.recvfrom(2048)
+#        future=time.time()+0.8
+#        ack = True
+#    except timeout:
+#        clientSocket.sendto(data, serverAddr)
+#print(ACK)
